@@ -225,7 +225,8 @@ public class Entitlements {
                 }
             };
         }
-        
+
+
         public static EntitlementManager allOf(final EntitlementManager... checkers) {
             return allOf(Arrays.asList(checkers));
         }
@@ -246,6 +247,23 @@ public class Entitlements {
             };
         }
 
+        // FIXME excluding EntitlementClass<U> is semantically betterbut then no way to redefine predicate for a EntitlementClass<T>
+        public static EntitlementManager nonOf(final EntitlementManager... checkers) {
+            return new EntitlementManager() {
+                @Override
+                public <T> boolean isEntitled(EntitlementContext context, EntitlementClass<T> permission, T typeArgument) {
+                    for (EntitlementManager checker: checkers)
+                        if (checker.isEntitled(context, permission, typeArgument))
+                            return false;
+                    return true;
+                }
+                @Override
+                public String toString() {
+                    return "Entitlements.nonOf(" + COMMA_JOINER.join(checkers) + ")";
+                }
+            };
+        }
+
         public static <U> EntitlementManager allowing(EntitlementClass<U> permission, Predicate<U> test) {
             return new SinglePermissionEntitlementChecker<U>(permission, test);
         }
@@ -257,12 +275,12 @@ public class Entitlements {
         public static class SinglePermissionEntitlementChecker<U> implements EntitlementManager {
             final EntitlementClass<U> permission;
             final Predicate<U> test;
-            
+
             protected SinglePermissionEntitlementChecker(EntitlementClass<U> permission, Predicate<U> test) {
                 this.permission = permission;
                 this.test = test;
             }
-            
+
             @SuppressWarnings("unchecked")
             @Override
             public <T> boolean isEntitled(EntitlementContext context, EntitlementClass<T> permission, T typeArgument) {
@@ -274,6 +292,7 @@ public class Entitlements {
                 return "Entitlements.allowing(" + permission + " -> " + test + ")";
             }
         }
+
         public static EntitlementManager seeNonSecretSensors() {
             return allowing(SEE_SENSOR, new Predicate<EntityAndItem<String>>() {
                 @Override

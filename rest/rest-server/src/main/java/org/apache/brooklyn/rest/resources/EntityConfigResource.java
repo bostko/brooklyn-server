@@ -29,12 +29,15 @@ import org.apache.brooklyn.config.ConfigKey;
 import org.apache.brooklyn.core.config.BasicConfigKey;
 import org.apache.brooklyn.core.entity.Entities;
 import org.apache.brooklyn.core.entity.EntityInternal;
+import org.apache.brooklyn.core.mgmt.BrooklynTaskTags;
 import org.apache.brooklyn.core.mgmt.entitlement.Entitlements;
 import org.apache.brooklyn.rest.api.EntityConfigApi;
 import org.apache.brooklyn.rest.domain.EntityConfigSummary;
 import org.apache.brooklyn.rest.filter.HaHotStateRequired;
 import org.apache.brooklyn.rest.transform.EntityTransformer;
 import org.apache.brooklyn.rest.util.WebResourceUtils;
+import org.apache.brooklyn.util.collections.MutableMap;
+import org.apache.brooklyn.util.collections.MutableSet;
 import org.apache.brooklyn.util.core.flags.TypeCoercions;
 import org.apache.brooklyn.util.core.task.Tasks;
 import org.apache.brooklyn.util.core.task.ValueResolver;
@@ -112,10 +115,24 @@ public class EntityConfigResource extends AbstractBrooklynRestResource implement
     }
 
     public Object get(boolean preferJson, String application, String entityToken, String configKeyName, Boolean raw) {
+
         Entity entity = brooklyn().getEntity(application, entityToken);
-        ConfigKey<?> ck = findConfig(entity, configKeyName);
-        Object value = ((EntityInternal)entity).config().getRaw(ck).orNull();
-        return resolving(value).preferJson(preferJson).asJerseyOutermostReturnValue(true).raw(raw).context(entity).timeout(ValueResolver.PRETTY_QUICK_WAIT).renderAs(ck).resolve();
+
+        // Should pass a sensors in EntitlementManager way
+        if (mgmt().getEntitlementManager().isEntitled(Entitlements.getEntitlementContext(),
+                Entitlements.SEE_SENSOR, Entitlements.SEE_SENSOR.entitlementClassArgumentType().getRawType()) {
+            Map<String, Object> flags = MutableMap.<String, Object>of("displayName", "expunging " + entity, "description", "REST call to expunge entity "
+                    + entity.getDisplayName() + " (" + entity + ")");
+            if (Entitlements.getEntitlementContext() != null) {
+                flags.put("tags", MutableSet.of(BrooklynTaskTags.tagForEntitlement(Entitlements.getEntitlementContext())));
+            }
+            ConfigKey<?> ck = findConfig(entity, configKeyName);
+            Object value = ((EntityInternal)entity).config().getRaw(ck).orNull();
+            return resolving(value).preferJson(preferJson).asJerseyOutermostReturnValue(true).raw(raw).context(entity).timeout(ValueResolver.PRETTY_QUICK_WAIT).renderAs(ck).resolve();
+        }
+        throw WebResourceUtils.unauthorized("User '%s' is not authorized to expunge entity %s",
+                Entitlements.getEntitlementContext().user(), entity);
+
     }
 
     private ConfigKey<?> findConfig(Entity entity, String configKeyName) {

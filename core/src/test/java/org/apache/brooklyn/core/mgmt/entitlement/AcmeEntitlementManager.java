@@ -29,8 +29,10 @@ public class AcmeEntitlementManager extends PerUserEntitlementManager {
     public AcmeEntitlementManager() {
         // default mode (if no user specified) is root
         super(Entitlements.root());
-        
-        super.addUser("admin", Entitlements.root());
+
+        super.addUser("super_admin", Entitlements.root());
+
+        super.addUser("regular_admin", Entitlements.FineGrainedEntitlements.nonOf(Entitlements.FineGrainedEntitlements.seeNonSecretSensors()));
         
         super.addUser("support", Entitlements.readOnly());
         
