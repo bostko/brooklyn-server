@@ -18,13 +18,18 @@
  */
 package org.apache.brooklyn.util.core;
 
-import java.net.InetAddress;
-
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Range;
+import com.google.common.collect.RangeSet;
+import com.google.common.collect.TreeRangeSet;
 import org.apache.brooklyn.core.location.geo.LocalhostExternalIpLoader;
 import org.apache.brooklyn.core.server.BrooklynServiceAttributes;
 import org.apache.brooklyn.util.JavaGroovyEquivalents;
 import org.apache.brooklyn.util.core.flags.TypeCoercions;
 import org.apache.brooklyn.util.net.Networking;
+
+import java.net.InetAddress;
+import java.util.Collection;
 
 public class BrooklynNetworkUtils {
 
@@ -39,4 +44,22 @@ public class BrooklynNetworkUtils {
                 Networking.getLocalHost()), InetAddress.class);
     }
 
+    // TODO it does not add adjacent intervals: {[22, 22], [23, 23]} is not merged to {[22, 23]}
+    public static RangeSet<Integer> portRulesToRanges(Collection<String> portRules) {
+        RangeSet<Integer> result = TreeRangeSet.create();
+        for (String portRule : portRules) {
+            if (portRule.contains("-")) {
+                String[] fromTo = portRule.split("-");
+                Preconditions.checkState(fromTo.length == 2);
+                result.add(closedRange(fromTo[0], fromTo[1]));
+            } else {
+                result.add(closedRange(portRule, portRule));
+            }
+        }
+        return result;
+    }
+
+    private static Range<Integer> closedRange(String from, String to) {
+        return Range.closed(Integer.parseInt(from), Integer.parseInt(to));
+    }
 }
