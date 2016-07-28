@@ -20,6 +20,7 @@ package org.apache.brooklyn.location.jclouds.networking;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Callable;
