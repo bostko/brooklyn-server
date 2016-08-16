@@ -1,5 +1,5 @@
 <location>
-  <brooklynVersion>0.10.0-SNAPSHOT</brooklynVersion>
+  <brooklynVersion>0.10.0-20160722.234</brooklynVersion>
   <type>org.apache.brooklyn.core.location.access.PortForwardManagerImpl</type>
   <id>banby1jx4j</id>
   <displayName>localhost</displayName>

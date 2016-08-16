@@ -1,5 +1,5 @@
 <entity>
-  <brooklynVersion>0.10.0-SNAPSHOT</brooklynVersion>
+  <brooklynVersion>0.10.0-20160722.2343</brooklynVersion>
   <type>org.apache.brooklyn.entity.stock.BasicApplicationImpl</type>
   <id>xk1z8wlgx2</id>
   <displayName>element1</displayName>

@@ -3,11 +3,11 @@
 # and templates to get started using Brooklyn
 
 brooklyn.catalog:
-  version: "0.10.0-SNAPSHOT" # BROOKLYN_VERSION
+  version: "0.10.0-20160722.2343" # BROOKLYN_VERSION
   items:
   - brooklyn.libraries:
     - name: org.apache.brooklyn.karaf-init
-      version: "0.10.0.SNAPSHOT" # BROOKLYN_VERSION
+      version: "0.10.0.20160722.2343" # BROOKLYN_VERSION
     include: classpath://catalog-classes.bom
 
   - id: server

@@ -1,5 +1,5 @@
 <entity>
-  <brooklynVersion>0.10.0-SNAPSHOT</brooklynVersion>
+  <brooklynVersion>0.10.0-20160722.2343</brooklynVersion>
   <type>org.apache.brooklyn.entity.software.base.EmptySoftwareProcessImpl</type>
   <id>yudk65cb3j</id>
   <displayName>EmptySoftwareProcess:yudk</displayName>

@@ -1,5 +1,5 @@
 <entity>
-  <brooklynVersion>0.10.0-SNAPSHOT</brooklynVersion>
+  <brooklynVersion>0.10.0-20160722.234</brooklynVersion>
   <type>org.apache.brooklyn.entity.software.base.EmptyWindowsProcessImpl</type>
   <id>exq3hn5eug</id>
   <displayName>EmptyWindowsProcess:exq3</displayName>

@@ -1,5 +1,5 @@
 <location>
-  <brooklynVersion>0.10.0-SNAPSHOT</brooklynVersion>
+  <brooklynVersion>0.10.0-20160722.2343</brooklynVersion>
   <type>org.apache.brooklyn.location.jclouds.JcloudsSshMachineLocation</type>
   <id>ppamsemxgo</id>
   <parent>msyp655po0</parent>
