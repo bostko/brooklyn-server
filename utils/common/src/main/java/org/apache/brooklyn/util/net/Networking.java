@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Predicate;
 import org.apache.brooklyn.util.exceptions.Exceptions;
 import org.apache.brooklyn.util.text.Identifiers;
 import org.apache.brooklyn.util.time.Time;
@@ -501,6 +502,12 @@ public class Networking {
             return false;
         }
     }
+
+    public static class IsReachablePredicate implements Predicate<HostAndPort> {
+        @Override public boolean apply(HostAndPort input) {
+            return Networking.isReachable(input);
+        }
+    };
 
     public static void closeQuietly(Socket s) {
         if (s != null) {
