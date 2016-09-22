@@ -28,7 +28,6 @@ import static org.jclouds.util.Throwables2.getFirstThrowableOfType;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.KeyPair;
@@ -2844,13 +2843,13 @@ public class JcloudsLocation extends AbstractCloudMachineProvisioningLocation im
                         + POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE.getName() + " : " + setup.get(POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE));
                 pollForFirstReachableHostAndPortPredicate = setup.get(POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE);
             } else {
-                LOG.debug("Using pollForFirstReachableAddress.predicate.type supplied from config for location " + this + " " + POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_TYPE.getName()
-                        + " : " + setup.get(POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_TYPE));
+                LOG.debug("Using " + POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS.getName() + " supplied from config for location " + this + " " + POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS.getName()
+                        + " : " + setup.get(POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS));
 
-                Class<? extends Predicate<HostAndPort>> predicateType = setup.get(POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_TYPE);
+                Class<? extends Predicate<HostAndPort>> predicateType = setup.get(POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS);
 
                 Map<String, Object> args = MutableMap.of();
-                ConfigUtils.addUnprefixedConfigKeyInConfigBack(POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE.getName() + ".", setup, args);
+                ConfigUtils.addUnprefixedConfigKeyInConfigBack(POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS.getName() + ".", setup, args);
                 try {
                     pollForFirstReachableHostAndPortPredicate = predicateType.getConstructor(Map.class).newInstance(args);
                 } catch (NoSuchMethodException|IllegalAccessException e) {

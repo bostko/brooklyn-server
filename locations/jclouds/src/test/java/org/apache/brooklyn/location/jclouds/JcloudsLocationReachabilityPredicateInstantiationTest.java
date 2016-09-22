@@ -67,7 +67,7 @@ public class JcloudsLocationReachabilityPredicateInstantiationTest {
     public void testInitDefaultConstructor() throws Exception {
         Assert.assertEquals(TEST_INIT_DEFAULT_CONSTRUCTOR_COUNTER.get(), 0);
         ConfigBag predicateConfig = new ConfigBag();
-        predicateConfig.put(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_TYPE, RecordingReachabilityCheck.class);
+        predicateConfig.put(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS, RecordingReachabilityCheck.class);
         jcloudsLocation.getFirstReachableAddress(node, predicateConfig);
         Assert.assertEquals(TEST_INIT_DEFAULT_CONSTRUCTOR_COUNTER.get(), 1);
     }
@@ -77,9 +77,9 @@ public class JcloudsLocationReachabilityPredicateInstantiationTest {
     public void testInitMapConstructor() {
         Assert.assertEquals(TEST_INIT_MAP_CONSTRUCTOR_COUNTER.get(), 0);
         ConfigBag predicateConfig = new ConfigBag();
-        predicateConfig.put(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_TYPE, RecordingReachabilityCheckMapConstructor.class);
-        predicateConfig.putStringKey(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE.getName() + ".key1", "val1");
-        predicateConfig.putStringKey(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE.getName() + ".key2", "val2");
+        predicateConfig.putStringKey(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS.getName(), RecordingReachabilityCheckMapConstructor.class.getName());
+        predicateConfig.putStringKey(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS.getName() + ".key1", "val1");
+        predicateConfig.putStringKey(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS.getName() + ".key2", "val2");
         jcloudsLocation.getFirstReachableAddress(node, predicateConfig);
         Assert.assertEquals(TEST_INIT_MAP_CONSTRUCTOR_COUNTER.get(), 1);
     }
@@ -87,9 +87,9 @@ public class JcloudsLocationReachabilityPredicateInstantiationTest {
     @Test
     public void testInitMapConstructorWithFlags() {
         ConfigBag predicateConfig = new ConfigBag();
-        predicateConfig.put(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_TYPE, RecordingReachabilityCheckMapAndFlagsConstructor.class);
+        predicateConfig.put(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS, RecordingReachabilityCheckMapAndFlagsConstructor.class);
         List<String> hostsMatchedHolder = new ArrayList<>();
-        predicateConfig.putStringKey(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE.getName() + ".hostsMatchedHolder", hostsMatchedHolder);
+        predicateConfig.putStringKey(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS.getName() + ".hostsMatchedHolder", hostsMatchedHolder);
         jcloudsLocation.getFirstReachableAddress(node, predicateConfig);
         Assert.assertTrue(hostsMatchedHolder.contains(ALLOWED_HOST_AND_PORT.getHostText()));
     }
@@ -99,7 +99,7 @@ public class JcloudsLocationReachabilityPredicateInstantiationTest {
     public void testInitEmptyConstructor() {
         Assert.assertEquals(TEST_INIT_MAP_AND_EMPTY_CONSTRUCTOR_COUNTER.get(), 0);
         ConfigBag predicateConfig = new ConfigBag();
-        predicateConfig.put(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_TYPE, RecordingReachabilityCheckProtectedMapConstructor.class);
+        predicateConfig.putStringKey(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS.getName(), RecordingReachabilityCheckProtectedMapConstructor.class.getName());
         jcloudsLocation.getFirstReachableAddress(node, predicateConfig);
         Assert.assertEquals(TEST_INIT_MAP_AND_EMPTY_CONSTRUCTOR_COUNTER.get(), 1);
     }
@@ -109,7 +109,7 @@ public class JcloudsLocationReachabilityPredicateInstantiationTest {
         ConfigBag predicateConfig = new ConfigBag();
 
         try {
-            predicateConfig.put(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_TYPE, NoSuitableConstructorPredicate.class);
+            predicateConfig.put(CloudLocationConfig.POLL_FOR_FIRST_REACHABLE_ADDRESS_PREDICATE_CLASS, NoSuitableConstructorPredicate.class);
             jcloudsLocation.getFirstReachableAddress(node, predicateConfig);
         } catch (RuntimeException e) {
             Assert.assertTrue(InstantiationException.class.isAssignableFrom(e.getCause().getClass()));
