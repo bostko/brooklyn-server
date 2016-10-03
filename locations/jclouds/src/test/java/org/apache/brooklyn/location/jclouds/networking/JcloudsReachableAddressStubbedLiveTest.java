@@ -106,7 +106,7 @@ public class JcloudsReachableAddressStubbedLiveTest extends AbstractJcloudsStubb
         RecordingSshTool.setCustomResponse(".*", new CustomResponseGenerator() {
             @Override public CustomResponse generate(ExecParams execParams) throws Exception {
                 System.out.println("ssh call: "+execParams);
-                Object host = execParams.props.get(SshTool.PROP_HOST);
+                Object host = execParams.props.get(SshTool.PROP_HOST.getName());
                 if (desiredIp.equals(host)) {
                     return new CustomResponse(0, "", "");
                 } else {

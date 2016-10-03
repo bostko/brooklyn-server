@@ -49,7 +49,7 @@ import com.google.common.collect.Maps;
  * This can be customised for particular commands using {@link #setCustomResponse(String, CustomResponseGenerator)}
  * to specify the exit code, stdout and stderr of a matching command.
  */
-public class RecordingSshTool implements SshTool {
+public class RecordingSshTool extends SshAbstractTool implements SshTool {
     
     public static class ExecParams {
         public final Map<String, ?> props;
@@ -184,8 +184,28 @@ public class RecordingSshTool implements SshTool {
         return constructorProps.get(constructorProps.size()-1);
     }
     
-    public RecordingSshTool(Map<?,?> props) {
+    public RecordingSshTool(Map<String,?> props) {
+        this(builder().from(props));
         constructorProps.add(props);
+    }
+
+    protected RecordingSshTool(Builder<?,?> builder) {
+        super(builder);
+    }
+
+    public static RecordingSshToolBuilder builder() {
+        return new RecordingSshToolBuilder();
+    }
+
+    public static class RecordingSshToolBuilder extends Builder<RecordingSshTool, RecordingSshToolBuilder> {
+    }
+
+    public static class Builder<T extends RecordingSshTool, B extends Builder<T,B>> extends AbstractSshToolBuilder<T,B> {
+
+        @Override
+        public T build() {
+            return (T)new RecordingSshTool(this);
+        }
     }
     @Override public void connect() {
         connected = true;
@@ -223,7 +243,11 @@ public class RecordingSshTool implements SshTool {
     @Override public int copyFromServer(Map<String, ?> props, String pathAndFileOnRemoteServer, File local) {
         return 0;
     }
-    protected int execInternal(Map<String, ?> props, List<String> commands, Map<String, ?> env) {
+    protected int execInternal(Map<String, ?> rawProps, List<String> commands, Map<String, ?> env) {
+        Map<String, ?> props = ImmutableMap.<String, Object>builder()
+                .putAll(rawProps)
+                .put(SshTool.PROP_HOST.getName(), host)
+                .build();
         execScriptCmds.add(new ExecCmd(props, "", commands, env));
         for (String cmd : commands) {
             for (Entry<String, CustomResponseGenerator> entry : customResponses.entrySet()) {
