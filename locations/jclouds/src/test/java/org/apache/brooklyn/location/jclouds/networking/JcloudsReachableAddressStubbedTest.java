@@ -22,6 +22,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.brooklyn.config.ConfigKey;
@@ -29,6 +30,7 @@ import org.apache.brooklyn.location.jclouds.AbstractJcloudsStubbedLiveTest;
 import org.apache.brooklyn.location.jclouds.JcloudsLocation;
 import org.apache.brooklyn.location.jclouds.JcloudsLocationConfig;
 import org.apache.brooklyn.location.jclouds.JcloudsSshMachineLocation;
+import org.apache.brooklyn.location.jclouds.JcloudsStubTemplateBuilder;
 import org.apache.brooklyn.location.jclouds.StubbedComputeServiceRegistry.AbstractNodeCreator;
 import org.apache.brooklyn.location.ssh.SshMachineLocation;
 import org.apache.brooklyn.test.Asserts;
@@ -58,13 +60,13 @@ import com.google.common.net.HostAndPort;
  * Simulates the creation of a VM that has multiple IPs. Checks that we choose the right address.
  * 
  */
-public class JcloudsReachableAddressStubbedLiveTest extends AbstractJcloudsStubbedLiveTest {
+public class JcloudsReachableAddressStubbedTest extends AbstractJcloudsStubbedLiveTest {
 
     // TODO Aim is to test the various situations/permutations, where we pass in different config.
     // More tests still need to be added.
 
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(JcloudsReachableAddressStubbedLiveTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JcloudsReachableAddressStubbedTest.class);
 
     @Override
     protected AbstractNodeCreator newNodeCreator() {
@@ -86,12 +88,25 @@ public class JcloudsReachableAddressStubbedLiveTest extends AbstractJcloudsStubb
         };
     }
 
+    @Override
+    public String getLocationSpec() {
+        return "jclouds:aws-ec2";
+    }
+
+    @Override
+    protected Map<Object, Object> jcloudsLocationConfig(Map<Object, Object> defaults) {
+        return ImmutableMap.builder()
+                .putAll(defaults)
+                .put(JcloudsLocationConfig.TEMPLATE_BUILDER.getName(), JcloudsStubTemplateBuilder.create())
+                .build();
+    }
+
     protected AbstractNodeCreator getNodeCreator() {
         return (AbstractNodeCreator) nodeCreator;
     }
 
     // With waitForSshable=true; pollForFirstReachableAddress=true; and custom reachable-predicate
-    @Test(groups = {"Live", "Live-sanity"})
+    @Test
     protected void testMachineUsesChosenAddress() throws Exception {
         final String desiredIp = "1.1.1.2"; 
         final AtomicBoolean chooserCalled = new AtomicBoolean(false);
