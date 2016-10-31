@@ -397,12 +397,15 @@ public class CatalogResource extends AbstractBrooklynRestResource implements Cat
             filters.add(CatalogPredicates.isBestVersion(mgmt()));
         
         filters.add(CatalogPredicates.entitledToSee(mgmt()));
-
+        log.info("START loading catalog cache");
+        long start = System.currentTimeMillis();
         ImmutableList<CatalogItem<Object, Object>> sortedItems =
                 FluentIterable.from(brooklyn().getCatalog().getCatalogItems())
                     .filter(Predicates.and(filters))
                     .toSortedList(CatalogItemComparator.getInstance());
-        return Lists.transform(sortedItems, toCatalogItemSummary(ui));
+        log.info("END loading catalog brooklyn().getCatalog().getCatalogItems() " + (System.currentTimeMillis() - start));
+        List<CatalogItemSummary> result = Lists.transform(sortedItems, toCatalogItemSummary(ui));
+        return result;
     }
 
     @Override

@@ -79,7 +79,9 @@ public class CatalogTransformer {
         EntitySpec<?> spec = null;
 
         try {
+            long start = System.currentTimeMillis();
             spec = (EntitySpec<?>) b.getCatalog().createSpec((CatalogItem) item);
+            log.info("An item was parsed in ms: " + (System.currentTimeMillis() - start));
             EntityDynamicType typeMap = BrooklynTypes.getDefinedEntityType(spec.getType());
             EntityType type = typeMap.getSnapshot();
 
