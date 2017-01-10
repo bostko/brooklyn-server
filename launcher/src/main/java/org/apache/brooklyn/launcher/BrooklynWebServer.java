@@ -80,6 +80,7 @@ import org.apache.brooklyn.util.stream.Streams;
 import org.apache.brooklyn.util.text.Identifiers;
 import org.apache.brooklyn.util.text.Strings;
 import org.apache.brooklyn.util.web.ContextHandlerCollectionHotSwappable;
+import org.apache.catalina.filters.CorsFilter;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.jaas.JAASLoginService;
 import org.eclipse.jetty.server.Connector;
@@ -456,6 +457,7 @@ public class BrooklynWebServer {
 
     private WebAppContext deployRestApi(WebAppContext context) {
         RestApiSetup.installRest(context,
+                new CorsFilter(), // TODO configure allowed Origins from brooklyn.cfg
                 new ManagementContextProvider(),
                 new ShutdownHandlerProvider(shutdownHandler),
                 new RequestTaggingRsFilter(),
