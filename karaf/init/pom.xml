@@ -65,7 +65,7 @@
             <artifactId>testng</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
+ <!--       <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
             <version>1.5.0</version>
@@ -74,7 +74,7 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.cm</artifactId>
             <version>1.0.7</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
    <build>

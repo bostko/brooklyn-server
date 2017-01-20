@@ -140,8 +140,8 @@ public class CorsImplSupplierFilter extends CrossOriginResourceSharingFilter {
         setBlockCorsIfUnauthorized(corsProperties.getConfig(BLOCK_CORS_IF_UNAUTHORIZED));
     }
     
-    public void setCorsEnabled(boolean enabled) {
-        this.corsEnabled = enabled;
+    public void setCorsEnabled(Boolean enabled) {
+        this.corsEnabled = Boolean.TRUE.equals(enabled);
         setFindResourceMethod(false);
         if (corsEnabled) {
             LOGGER.info("CORS brooklyn feature enabled.");
