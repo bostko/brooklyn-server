@@ -36,6 +36,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Function;
+import com.google.common.reflect.TypeToken;
 import org.apache.brooklyn.api.mgmt.rebind.PersistenceExceptionHandler;
 import org.apache.brooklyn.api.mgmt.rebind.RebindExceptionHandler;
 import org.apache.brooklyn.api.mgmt.rebind.mementos.BrooklynMemento;
@@ -98,6 +100,10 @@ public class BrooklynMementoPersisterToObjectStore implements BrooklynMementoPer
             "persister.maxSerializationAttempts",
             "Maximum number of attempts to serialize a memento (e.g. if first attempts fail because of concurrent modifications of an entity)", 
             5);
+
+    public static final ConfigKey<Class<? extends Function<String, String>>> PERSISTER_PUT_TRANSFORMER = ConfigKeys.newConfigKey(new TypeToken<Class<? extends Function<String, String>>>() {},"persister.put.transformer");
+
+    public static final ConfigKey<Class<? extends Function<String, String>>> PERSISTER_GET_TRANSFORMER = ConfigKeys.newConfigKey(new TypeToken<Class<? extends Function<String, String>>>() {},"persister.get.transformer");
 
     private final PersistenceObjectStore objectStore;
     private final MementoSerializer<Object> serializerWithStandardClassLoader;
@@ -294,6 +300,10 @@ public class BrooklynMementoPersisterToObjectStore implements BrooklynMementoPer
                     Exceptions.propagateIfFatal(e);
                     exceptionHandler.onLoadMementoFailed(type, "memento "+id+" read error", e);
                 }
+                if (brooklynProperties.getConfig(PERSISTER_GET_TRANSFORMER) != null) {
+                    Function<String, String> getTransformer = brooklynProperties.getConfig(PERSISTER_GET_TRANSFORMER).newInstance();
+                    contents = getTransformer.apply(contents);
+                }
                 
                 String xmlId = (String) XmlUtil.xpathHandlingIllegalChars(contents, "/"+type.toCamelCase()+"/id");
                 String safeXmlId = Strings.makeValidFilename(xmlId);
@@ -386,7 +396,7 @@ public class BrooklynMementoPersisterToObjectStore implements BrooklynMementoPer
 
         return result;
     }
-    
+
     @Override
     public BrooklynMemento loadMemento(BrooklynMementoRawData mementoData, final LookupContext lookupContext, final RebindExceptionHandler exceptionHandler) throws IOException {
         if (mementoData==null)
@@ -645,7 +655,15 @@ public class BrooklynMementoPersisterToObjectStore implements BrooklynMementoPer
 
     private void persist(String subPath, Memento memento, PersistenceExceptionHandler exceptionHandler) {
         try {
-            getWriter(getPath(subPath, memento.getId())).put(getSerializerWithStandardClassLoader().toString(memento));
+            String putValue;
+            if (brooklynProperties.getConfig(PERSISTER_PUT_TRANSFORMER) != null) {
+                Function<String, String> putTransformer = brooklynProperties.getConfig(PERSISTER_PUT_TRANSFORMER).newInstance();
+                putValue = putTransformer.apply(
+                        getSerializerWithStandardClassLoader().toString(memento));
+            } else {
+                putValue = getSerializerWithStandardClassLoader().toString(memento);
+            }
+            getWriter(getPath(subPath, memento.getId())).put(putValue);
         } catch (Exception e) {
             exceptionHandler.onPersistMementoFailed(memento, e);
         }
@@ -655,13 +673,17 @@ public class BrooklynMementoPersisterToObjectStore implements BrooklynMementoPer
         try {
             if (content==null) {
                 LOG.warn("Null content for "+type+" "+id);
+            } else if (brooklynProperties.getConfig(PERSISTER_PUT_TRANSFORMER) != null) {
+                Function<String, String> putTransformer = brooklynProperties.getConfig(PERSISTER_PUT_TRANSFORMER).newInstance();
+                content = putTransformer.apply(
+                        getSerializerWithStandardClassLoader().toString(content));
             }
             getWriter(getPath(subPath, id)).put(content);
         } catch (Exception e) {
             exceptionHandler.onPersistRawMementoFailed(type, id, e);
         }
     }
-    
+
     private void delete(String subPath, String id, PersistenceExceptionHandler exceptionHandler) {
         try {
             StoreObjectAccessorWithLock w = getWriter(getPath(subPath, id));
