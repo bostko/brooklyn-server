@@ -26,10 +26,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import org.apache.brooklyn.api.entity.ImplementedBy;
+import org.apache.brooklyn.api.sensor.AttributeSensor;
 import org.apache.brooklyn.config.ConfigKey;
 import org.apache.brooklyn.core.config.ConfigKeys;
 import org.apache.brooklyn.core.entity.BrooklynConfigKeys;
 import org.apache.brooklyn.core.sensor.AttributeSensorAndConfigKey;
+import org.apache.brooklyn.core.sensor.Sensors;
 import org.apache.brooklyn.entity.software.base.SoftwareProcess;
 import org.apache.brooklyn.util.core.flags.SetFromFlag;
 import org.apache.brooklyn.util.time.Duration;
@@ -110,4 +112,6 @@ public interface TestSshCommand extends BaseTest {
      * The maximum number of times to execute the ssh command, before throwing an exception.
      */
     ConfigKey<Integer> MAX_ATTEMPTS = ConfigKeys.newIntegerConfigKey("maxAttempts", "Maximum number of attempts");
+
+    AttributeSensor<Boolean> TEST_COMMANDS_QUEUED = Sensors.newBooleanSensor("testCommandsQueued");
 }

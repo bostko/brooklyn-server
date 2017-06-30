@@ -260,6 +260,7 @@ public class TestSshCommandImpl extends TargetableTestComponentImpl implements T
                 .machine(machine);
 
         ProcessTaskWrapper<Integer> job = DynamicTasks.queue(etf);
+        sensors().set(TEST_COMMANDS_QUEUED, true);
         job.asTask().blockUntilEnded();
         return new Result(job);
     }
